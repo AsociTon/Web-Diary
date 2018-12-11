@@ -1,47 +1,47 @@
 <?php
-$error = "";
-$user = "root";
-$pass = "";
-$db = "mydb";
-$db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
+  $error = "";
+  $user = "root";
+  $pass = "";
+  $db = "mydb";
+  $db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
 
-  $sql = "CREATE TABLE IF NOT EXISTS mydiary(email TEXT,password TEXT,entry TEXT)";
+    $sql = "CREATE TABLE IF NOT EXISTS mydiary(name TEXT, email TEXT, password TEXT, entry TEXT)";
+if(array_key_exists("sign-up",$_POST)){
+    if(mysqli_query($db,$sql)){
 
-  if(mysqli_query($db,$sql)){
+      $sql = "SELECT * FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-up-email'])."'";//to save from sql injections
+      $result = mysqli_query($db,$sql);
 
-    $sql = "SELECT * FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-up-email'])."'";//to save from sql injections
-    $result = mysqli_query($db,$sql);
+      if(mysqli_num_rows($result) > 0){  //to check whether the given is already present in the database
 
-    if(mysqli_num_rows($result) > 0){  //to check whether the given is already present in the database
+        $error = "That email is already registered";
+        echo $error;
 
-      $error = "That email is already registered";
-      echo $error;
+      }
+      else{
 
-    }
-    else{
+      $sql = "INSERT INTO mydiary(name, email, password) VALUES('".mysqli_real_escape_string($db,$_POST['first-name'])."','".mysqli_real_escape_string($db,$_POST['sign-up-email'])."','".$_POST['sign-up-password']."')";
 
-    $sql = "INSERT INTO mydiary(email,password) VALUES('".mysqli_real_escape_string($db,$_POST['sign-up-email'])."','".$_POST['sign-up-password']."')";
+      if(mysqli_query($db, $sql)){
 
-    if(mysqli_query($db, $sql)){
+        echo "Data Updated";
+        session_start();//starting a session to make the email remebered
+        $_SESSION['email'] = $_POST['sign-up-email'];
+        header("Location: diary-page.php");//page to redirect to with the value of session variable
 
-      echo "DAta updated";
-      session_start();//starting a session to make the email remebered
-      $_SESSION['email'] = $_POST['sign-up-email'];
-      header("Location: diary-page.php");//page to redirect to with the value of session variable
+      }else{
+
+        $error = "failed to update";
+
+        }
+      }
 
     }else{
 
-      $error = "failed to update";
+      $error = "query Unsucessfull";
 
-      }
     }
-
-  }else{
-
-    $error = "query Unsucessfull";
-
-  }
-
+}
 ?>
 
 <!DOCTYPE html>
@@ -61,6 +61,7 @@ $db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the
     <div id="error">
 
     </div>
+    <input type="text" id="first-name" name="first-name" placeholder="Name"><br>
     <input type="text" id="email" name="sign-up-email" placeholder="Email"><br>
     <input type="password" id="password" name="sign-up-password"><br>
     <button type="submit" id="but1" name="sign-up">Sign Up</button><br>

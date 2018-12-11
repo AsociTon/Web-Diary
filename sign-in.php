@@ -1,29 +1,31 @@
 <?php
-$error = "";
-$user = "root";
-$pass = "";
-$db = "mydb";
-$db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
-$sql = "SELECT email FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-in-email'])."'AND password='".$_POST['sign-in-password']."';";
+  if(array_key_exists("sign-in",$_POST)){ //when the sign in button is clicked
 
-    $result = mysqli_query($db,$sql);
+  $error = "";
+  $user = "root";
+  $pass = "";
+  $db = "mydb";
+  $db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
+  $sql = "SELECT email FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-in-email'])."'AND password='".$_POST['sign-in-password']."';";
 
-if(mysqli_query($db,$sql)){
+      $result = mysqli_query($db,$sql);
 
-      echo "query done";
-    $row = mysqli_fetch_array(mysqli_query($db,$sql));
+  if(mysqli_query($db,$sql)){
 
-    session_start();//starting a session to make the email remebered
-    $_SESSION['email'] = $_POST['sign-in-email'];
-    header("Location: diary-page.php");//page to redirect to with the value of session variable
+        echo "query done";
+      $row = mysqli_fetch_array(mysqli_query($db,$sql));
+
+      session_start();//starting a session to make the email remebered
+      $_SESSION['email'] = $_POST['sign-in-email'];
+      header("Location: diary-page.php");//page to redirect to with the value of session variable
 
 
-}else{
+  }else{
 
-    $error =  "Unable to Sign In";
+      $error =  "Unable to Sign In, server connection time out..";
 
+  }
 }
-
 
 ?>
 

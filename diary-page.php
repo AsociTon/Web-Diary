@@ -1,36 +1,54 @@
 <?php
 session_start();
-echo "welcome".$_SESSION['email'];
+setcookie("email",$_SESSION['email'],time()+60*60*24*365);
 
-if($_POST['log-out'] == '1'){
-
-  $_SESSION['email'] = "";
-  header("Location: index.php");//page to redirect to with the value of session variable
-
-}
-
+$_COOKIE["email"];
 $error = "";
 $user = "root";
 $pass = "";
 $db = "mydb";
+$row="";
 $db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
-$sql = "INSERT INTO entry FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-in-email'])."'AND password='".$_POST['sign-in-password']."';";
+$flag = 0;
+if($flag == 0){
+$sql = "SELECT entry from mydiary WHERE email='".mysqli_real_escape_string($db,$_COOKIE["email"])."';";
 
-    $result = mysqli_query($db,$sql);
+  if(mysqli_query($db,$sql)){
 
-if(mysqli_query($db,$sql)){
+        $result = mysqli_query($db,$sql);
+        $row = mysqli_fetch_array($result);
+        $flag = 1;
 
-      echo "query done";
-    $row = mysqli_fetch_array(mysqli_query($db,$sql));
+  }else{
 
+      $error =  "Unable to store entry";
 
-}else{
+  }
+}
 
-    $error =  "Unable to Sign In";
+if(array_key_exists("log-out",$_POST)){
+
+  setcookie("email","",time()*(-60)*60);//to delete/disable the cookie
+  header("Location: index.php");//page to redirect to with the value of session variable
 
 }
 
+if(array_key_exists("save",$_POST)){
 
+  $sql = "UPDATE mydiary SET entry='".mysqli_real_escape_string($db,$_POST["text_area"])."'  WHERE email='".mysqli_real_escape_string($db,$_COOKIE["email"])."';";
+
+  if(mysqli_query($db,$sql)){
+
+        echo "query done";
+
+
+  }else{
+
+      $error =  "Unable to store entry";
+
+  }
+
+}
 ?>
 
 <!DOCTYPE html>
@@ -43,13 +61,25 @@ if(mysqli_query($db,$sql)){
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
   <title>My Diary</title>
+  <style type="text/css">
 
+    textarea{
+
+      width: 100%;
+      height: 85%;
+
+    }
+
+  </style>
 </head>
 <body>
   <form method="post">
-    <button type="submit" id="but1" name="log-out">Log Out</button><br>
+    <button type="submit" id="but1" name="log-out">Log Out</button>
+    <button type="submit" id="but1" name="save">Save</button>
+    <input type="hidden" id = "text_area_for_php" name="text_area">
   </form>
-
+  <br>
+      <textarea id="text_area"><?php echo $row[0] ?></textarea>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -57,6 +87,9 @@ if(mysqli_query($db,$sql)){
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   <script type="text/javascript">
 
+    $("#text_area").on("change keyup paste",function(){
+      $("#text_area_for_php").val($("#text_area").val());
+    });
 
   </script>
 </body>
