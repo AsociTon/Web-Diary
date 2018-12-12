@@ -1,12 +1,14 @@
 <?php
-  $error = "";
+  $error="";
   $user = "root";
   $pass = "";
   $db = "mydb";
   $db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
 
     $sql = "CREATE TABLE IF NOT EXISTS mydiary(name TEXT, email TEXT, password TEXT, entry TEXT)";
+
 if(array_key_exists("sign-up",$_POST)){
+
     if(mysqli_query($db,$sql)){
 
       $sql = "SELECT * FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-up-email'])."'";//to save from sql injections
@@ -15,7 +17,6 @@ if(array_key_exists("sign-up",$_POST)){
       if(mysqli_num_rows($result) > 0){  //to check whether the given is already present in the database
 
         $error = "That email is already registered";
-        echo $error;
 
       }
       else{
@@ -24,7 +25,6 @@ if(array_key_exists("sign-up",$_POST)){
 
       if(mysqli_query($db, $sql)){
 
-        echo "Data Updated";
         session_start();//starting a session to make the email remebered
         $_SESSION['email'] = $_POST['sign-up-email'];
         header("Location: diary-page.php");//page to redirect to with the value of session variable
@@ -55,19 +55,57 @@ if(array_key_exists("sign-up",$_POST)){
 
   <title>My Diary</title>
 
+  <style type="text/css">
+
+    .index{
+
+        text-align: center;
+    }
+
+    #index{
+      margin-top: 100px;
+      width:400px;
+      height:400px;
+
+    }
+
+    #error{
+
+      display:<?php if(strlen($error != 0)){ echo "block"; } ?>;
+
+    }
+
+  </style>
+
 </head>
-<body>
-  <form method="post">
-    <div id="error">
+<body style="background: url(diar.jfif) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
 
-    </div>
-    <input type="text" id="first-name" name="first-name" placeholder="Name"><br>
-    <input type="text" id="email" name="sign-up-email" placeholder="Email"><br>
-    <input type="password" id="password" name="sign-up-password"><br>
-    <button type="submit" id="but1" name="sign-up">Sign Up</button><br>
-    <a href="http://localhost/my-diary/sign-in.php">Already a member Sign In</a>
-  </form>
 
+  <div class="container" id="index">
+
+    <div class="alert alert-danger" id="error" role="alert"><?php if(strlen($error) != 0){echo $error;}?></div>
+
+    <form method="post">
+
+      <div class="form-group">
+        <label for="first-name">Name</label>
+        <input type="text" class="form-control" id="first-name" name="first-name" placeholder="First name, nick-name e.g.">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputEmail1">Email addres</label>
+        <input type="email" class="form-control" id="email" name="sign-up-email" aria-describedby="emailHelp" placeholder="Enter email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" name="sign-up-password" placeholder="Enter Password">
+      </div>
+      <div class="index"><button type="submit" id="but1" class="btn btn-primary" name="sign-up">Sign Up</button></div><br>
+      <a href="http://localhost/my-diary/sign-in.php">Already a member Sign In</a>
+
+    </form>
+
+</div>
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -94,6 +132,8 @@ if(array_key_exists("sign-up",$_POST)){
 
     $("#but1").click(function(){
 
+        error_str = "";
+
         if($("#email").val().length == 0){
 
           error_str += "Email Id is required";
@@ -110,11 +150,13 @@ if(array_key_exists("sign-up",$_POST)){
         if(error_str.length == 0){
 
           $("#error").html("");
+          $("#error").css("display","none");
           return true;
 
         }else{
 
           $("#error").html(error_str);
+          $("#error").css("display","block");
           return false;
 
         }

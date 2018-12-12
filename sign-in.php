@@ -1,24 +1,36 @@
 <?php
+$error = "";
+$user = "root";
+$pass = "";
+$db = "mydb";
+$db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
+
   if(array_key_exists("sign-in",$_POST)){ //when the sign in button is clicked
 
-  $error = "";
-  $user = "root";
-  $pass = "";
-  $db = "mydb";
-  $db = new mysqli("localhost",$user,$pass,$db) or die("Unsucessfull");//skips the rest script in case db is not connected
-  $sql = "SELECT email FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-in-email'])."'AND password='".$_POST['sign-in-password']."';";
+  $sql = "SELECT password FROM mydiary WHERE email='".mysqli_real_escape_string($db,$_POST['sign-in-email'])."';";
 
       $result = mysqli_query($db,$sql);
 
   if(mysqli_query($db,$sql)){
 
-        echo "query done";
       $row = mysqli_fetch_array(mysqli_query($db,$sql));
+
+      if($row[0] == $_POST['sign-in-password']){
 
       session_start();//starting a session to make the email remebered
       $_SESSION['email'] = $_POST['sign-in-email'];
+      echo "passwrord matched";
       header("Location: diary-page.php");//page to redirect to with the value of session variable
 
+    }else if($row[0]){
+
+      $error = "Incorrect password";
+
+    }else{
+
+      $error = "Invalid credentials";
+
+    }
 
   }else{
 
@@ -40,17 +52,52 @@
 
   <title>My Diary</title>
 
-</head>
-<body>
-  <form method="post">
-    <div id="error">
+  <style type="text/css">
 
-    </div>
-    <input type="text" id="email" name="sign-in-email" placeholder="Email"><br>
-    <input type="password" id="password" name="sign-in-password"><br>
-    <button type="submit" id="but1" name="sign-in">Sign In</button><br>
-    <a href="http://localhost/my-diary/index.php">Not a member, Sign Up</a>
-  </form>
+    .index{
+
+        text-align: center;
+    }
+
+    #index{
+      margin-top: 100px;
+      width:400px;
+      height:400px;
+
+    }
+
+    #error{
+
+      display:<?php if(strlen($error != 0)){ echo "block"; } ?>;
+
+    }
+
+  </style>
+
+</head>
+
+<body style="background: url(diar.jfif) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
+
+
+  <div class="container" id="index">
+
+    <div class="alert alert-danger" id="error" role="alert"><?php if(strlen($error) != 0){echo $error;}?></div>
+
+    <form method="post">
+
+      <div class="form-group">
+        <label for="email">Email addres</label>
+        <input type="email" class="form-control" id="email" name="sign-in-email" aria-describedby="emailHelp" placeholder="Enter email">
+      </div>
+      <div class="form-group">
+        <label for="password">Enter password</label>
+        <input type="password" class="form-control" id="password" name="sign-in-password">
+      </div>
+      <div class="index"><button type="submit" id="but1" class="btn btn-primary" name="sign-in">Sign In</button></div><br>
+      <a href="http://localhost/my-diary/index.php">Not a member, Sign Up</a>
+
+    </form>
+
 
   <!-- Optional JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
