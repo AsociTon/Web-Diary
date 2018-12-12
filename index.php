@@ -27,7 +27,7 @@ if(array_key_exists("sign-up",$_POST)){
 
         session_start();//starting a session to make the email remebered
         $_SESSION['email'] = $_POST['sign-up-email'];
-        header("Location: diary-page.php");//page to redirect to with the value of session variable
+        header("Location:Web-Diary/diary-page.php");//page to redirect to with the value of session variable
 
       }else{
 
@@ -101,7 +101,7 @@ if(array_key_exists("sign-up",$_POST)){
         <input type="password" class="form-control" id="password" name="sign-up-password" placeholder="Enter Password">
       </div>
       <div class="index"><button type="submit" id="but1" class="btn btn-primary" name="sign-up">Sign Up</button></div><br>
-      <a href="http://localhost/my-diary/sign-in.php">Already a member Sign In</a>
+      <a href="Web-Diary/sign-in.php">Already a member Sign In</a>
 
     </form>
 
