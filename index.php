@@ -101,7 +101,7 @@ if(array_key_exists("sign-up",$_POST)){
         <input type="password" class="form-control" id="password" name="sign-up-password" placeholder="Enter Password">
       </div>
       <div class="index"><button type="submit" id="but1" class="btn btn-primary" name="sign-up">Sign Up</button></div><br>
-      <a href="Web-Diary/sign-in.php">Already a member Sign In</a>
+      <a href="https://github.com/AsociTon/Web-Diary/sign-in.php">Already a member Sign In</a>
 
     </form>
 
