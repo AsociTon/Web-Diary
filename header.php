@@ -44,8 +44,8 @@
     textarea{
 
       margin-top: 5px;
-      width:100%;
-      height: 100%;
+      width: 100%;
+      height: 700px;
       opacity: 0.7;
 
     }
@@ -66,6 +66,7 @@
     .toggle_forms{
 
       font-weight: bold;
+
 
     }
 

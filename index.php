@@ -2,7 +2,16 @@
 $error="";
 include("connection.php");
 
-if(array_key_exists("sign-up",$_POST)){
+if(array_key_exists("email",$_COOKIE) && $_COOKIE["email"]){
+
+  session_start();//starting a session to make the email remebered
+  $_SESSION['email'] = $_COOKIE["email"];
+  header("Location: diary-page.php");//page to redirect to with the value of session variable
+
+
+}
+
+if(array_key_exists("sign-up",$_POST) && $_POST["sign-up"]){
 
     if(mysqli_query($db,$sql)){
 

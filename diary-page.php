@@ -1,12 +1,16 @@
 <?php
 session_start();
-setcookie("email",$_SESSION['email'],time()+60*60*24*365);
 
-$_COOKIE["email"];
+if(array_key_exists("email", $_SESSION) && $_SESSION["email"]){
+
+  setcookie("email",$_SESSION['email'],time()+60*60*24*365);
+
+}
+
 $error = "";
-
 include("connection.php");
 
+if(array_key_exists("email", $_COOKIE) && $_COOKIE["email"]){
 $sql = "SELECT entry from mydiary WHERE email='".mysqli_real_escape_string($db,$_COOKIE["email"])."';";
 
   if(mysqli_query($db,$sql)){
@@ -19,11 +23,11 @@ $sql = "SELECT entry from mydiary WHERE email='".mysqli_real_escape_string($db,$
       $error =  "Unable to store entry";
 
   }
-
+}
 
 if(array_key_exists("log-out",$_POST)){
 
-  setcookie("email","",time()*(-60)*60);//to delete/disable the cookie
+  setcookie("email","",time()-60*60);//to delete/disable the cookie
   header("Location: index.php");//page to redirect to with the value of session variable
 
 }
@@ -59,7 +63,7 @@ if(array_key_exists("save",$_POST)){
 
 <?php include("header.php"); ?>
 
-  <div class="container-fluid">
+<div class="container-fluid"> 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <a class="navbar-brand" href="#">Web Diary</a>
       <form class="form-inline my-2 my-lg-0" method="post">
@@ -68,10 +72,10 @@ if(array_key_exists("save",$_POST)){
         <input type="hidden" id = "text_area_for_php" name="text_area">
       </form>
     </nav>
-    <textarea id="text_area" class="form-control">
-      <?php if(isset($row)){echo $row[0];} ?>
-    </textarea>
-  </div>
+      <textarea id="text_area" class="form-control">
+        <?php if(isset($row)){echo $row[0];} ?>
+      </textarea>
+</div>
 
   <script type="text/javascript">
 
